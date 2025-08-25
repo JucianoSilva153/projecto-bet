@@ -1,0 +1,379 @@
+@page "/dashboard/links"
+@using Common
+@layout DashboardLayout
+@rendermode InteractiveServer
+
+<div class="bg-white min-h-screen py-8 sm:py-12">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="lg:text-center">
+            <h1 class="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
+                Painel de Gerenciamento de Links
+            </h1>
+            <p class="mt-4 text-lg leading-8 text-gray-600">
+                Gerencie todos os seus links de afiliado. Adicione novos, edite os existentes e visualize estatísticas
+                de
+                cliques em um único lugar.
+            </p>
+        </div>
+
+        <!-- Botão para abrir o dialog -->
+        <div class="mt-10 text-right">
+            <button @onclick="() => OpenDialog()"
+                    class="inline-flex items-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                <svg class="-ml-0.5 mr-1.5 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                     aria-hidden="true"
+                     viewBox="0 0 20 20">
+                    <path
+                        d="M10.75 4.75a.75.75 0 00-1.5 0V9H5a.75.75 0 000 1.5h4.25v4.25a.75.75 0 001.5 0V10.5H15a.75.75 0 000-1.5h-4.25V4.75z"/>
+                </svg>
+                Adicionar Novo Link
+            </button>
+        </div>
+
+        <!-- Tabela de links -->
+        <div class="mt-8 flow-root">
+            <div class="-my-2 -mx-6 overflow-x-auto md:w-full lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    @if (isLoading)
+                    {
+                        <div class="flex justify-center">
+                            <div
+                                class="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="block w-full overflow-x-auto">
+                            <table class="hidden md:table w-full table-fixed border-collapse divide-y divide-gray-300">
+                                <thead>
+                                <tr>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Promo</th>
+                                    <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                        Título
+                                    </th>
+                                    <th class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Descrição</th>
+                                    <th class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Bônus</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">URL</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"><span
+                                            class="sr-only">Ações</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+                                @if (Links.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-gray-500">Sem links ainda!</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var link in Links)
+                                    {
+                                        <tr>
+                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-0">
+                                                <img src="@link.ImageUrl" alt="imagem promocional"
+                                                     class="h-12 rounded"/>
+                                            </td>
+                                            <td class="px-3 py-4 text-sm text-gray-900 max-w-sm truncate"
+                                                title="@link.Name">@link.Name</td>
+                                            <td class="px-3 py-4 text-sm text-gray-500 max-w-sm truncate"
+                                                title="@link.Description">@link.Description</td>
+                                            <td class="px-3 py-4 text-sm text-gray-500 max-w-sm truncate"
+                                                title="@link.BonusInfo">@link.BonusInfo</td>
+                                            <td class="px-3 py-4 text-sm text-blue-600 underline max-w-sm truncate"
+                                                title="@link.AffiliateUrl">@link.AffiliateUrl</td>
+                                            <td class="px-3 py-4 text-sm">
+                                                @if (link.IsHighlighted)
+                                                {
+                                                    <span
+                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Ativo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span
+                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-700">Inativo</span>
+                                                }
+                                            </td>
+                                            <td class="py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                <button @onclick="() => EditLink(link)"
+                                                        class="text-indigo-600 hover:text-indigo-900">Editar
+                                                </button>
+                                                <span class="text-gray-400"> | </span>
+                                                <button @onclick="() => DeleteLink(link.Id)"
+                                                        class="text-red-600 hover:text-red-900">Excluir
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                </tbody>
+                            </table>
+
+                            <!-- versão mobile -->
+                            <div class="md:hidden space-y-4">
+                                @foreach (var link in Links)
+                                {
+                                    <div
+                                        class="border rounded-lg p-4 shadow-sm bg-white w-full box-border overflow-hidden">
+                                        <div class="flex items-start gap-3 w-full">
+                                            <img src="@link.ImageUrl" alt="Promo"
+                                                 class="h-12 w-12 rounded flex-shrink-0 object-cover"/>
+
+                                            <div class="flex-1 min-w-0">
+                                                <h3 class="font-semibold text-gray-900 break-words">@link.Name</h3>
+                                                <p class="text-sm text-gray-500 break-words mt-1">
+                                                    @link.Description
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 grid gap-2">
+                                            <div class="text-sm">
+                                                <span class="font-medium text-gray-700">Bônus:</span>
+                                                <span class="text-gray-600 break-words">@link.BonusInfo</span>
+                                            </div>
+
+                                            <div class="text-sm">
+                                                <span class="font-medium text-gray-700">URL:</span>
+                                                <a href="@link.AffiliateUrl"
+                                                   class="text-blue-600 break-all block mt-1 overflow-hidden text-ellipsis">
+                                                    @link.AffiliateUrl
+                                                </a>
+                                            </div>
+
+                                            <div class="text-sm flex items-center">
+                                                <span class="font-medium text-gray-700 mr-2">Status:</span>
+                                                @if (link.IsHighlighted)
+                                                {
+                                                    <span
+                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Ativo</span>
+                                                }
+                                                else
+                                                {
+                                                    <span
+                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-gray-200 text-gray-700">Inativo</span>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3 flex justify-end space-x-2">
+                                            <button @onclick="() => EditLink(link)"
+                                                    class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                                Editar
+                                            </button>
+                                            <span class="text-gray-300">|</span>
+                                            <button @onclick="() => DeleteLink(link.Id)"
+                                                    class="text-red-600 hover:text-red-900 text-sm font-medium">Excluir
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog -->
+<div class="@(showDialog ? "fixed inset-0 z-50 overflow-y-auto" : "hidden")">
+    <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div class="fixed inset-0 bg-gray-900/50 transition-opacity" @onclick="CloseDialog"></div>
+
+        <div
+            class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-6 py-5">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    @(NewLink.IsEditing ? "Editar Link" : "Cadastrar Novo Link")
+                </h3>
+
+                <form class="mt-6 space-y-5">
+                    <!-- Preview da Imagem -->
+                    <div class="flex flex-col items-center">
+                        <img src="@(!string.IsNullOrEmpty(NewLink.ImageUrl) ? NewLink.ImageUrl : DefaultImage)"
+                             class="h-24 w-24 object-cover rounded border mb-2"/>
+                        <InputFile id="fileInput" OnChange="OnImageSelected" class="hidden"/>
+
+                        <label for="fileInput"
+                               class="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition">
+                            📁 Selecionar Imagem
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                        <input type="text" placeholder="Ex: Bônus de Boas-Vindas" @bind="NewLink.Name"
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-secondary focus:ring-2 focus:ring-secondary"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                        <textarea @bind="NewLink.Description" placeholder="Descrição curta"
+                                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-secondary focus:ring-2 focus:ring-secondary"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição do Bônus</label>
+                        <textarea @bind="NewLink.BonusInfo" placeholder="Detalhes do bônus"
+                                  class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-secondary focus:ring-2 focus:ring-secondary"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL</label>
+                        <input type="url" @bind="NewLink.AffiliateUrl" placeholder="https://seudominio.com/link"
+                               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-secondary focus:ring-2 focus:ring-secondary"/>
+                    </div>
+
+                    <EditForm Model="NewLink">
+                        <label>Destaque?</label>
+                        <InputRadioGroup @bind-Value="NewLink.IsHighlighted" Name="highlight" class="flex items-center space-x-4">
+                            <label class="inline-flex items-center">
+                                <InputRadio Value="true" class="text-secondary focus:ring-secondary"/>
+                                <span class="ml-2 text-sm text-gray-700">Sim</span>
+                            </label>
+
+                            <label class="inline-flex items-center">
+                                <InputRadio Value="false" class="text-secondary focus:ring-secondary"/>
+                                <span class="ml-2 text-sm text-gray-700">Não</span>
+                            </label>
+                        </InputRadioGroup>
+                    </EditForm>
+                    
+                </form>
+            </div>
+
+            <div class="bg-gray-100 px-6 py-3 sm:flex sm:flex-row-reverse">
+                <button type="button" @onclick="SaveLink"
+                        class="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-secondary sm:ml-3 sm:w-auto disabled:opacity-50"
+                        disabled="@isSaving">
+                    @(isSaving ? "Salvando..." : (NewLink.IsEditing ? "Atualizar" : "Salvar"))
+                </button>
+                <button type="button" @onclick="CloseDialog"
+                        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-700 ring-1 ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    public List<AffiliateLinkDto> Links { get; set; } = [];
+    public AffiliateLinkFormModel NewLink { get; set; } = new();
+
+    bool isLoading = true;
+    bool isSaving = false;
+    bool showDialog = false;
+    private const string DefaultImage = "./image-not-found.png";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLinks();
+    }
+
+    private async Task LoadLinks()
+    {
+        isLoading = true;
+        Links = await LinkService.GetAllAsync();
+        isLoading = false;
+    }
+
+    private void OpenDialog()
+    {
+        NewLink = new AffiliateLinkFormModel();
+        showDialog = true;
+    }
+
+    private void CloseDialog()
+    {
+        showDialog = false;
+        NewLink = new AffiliateLinkFormModel();
+    }
+
+    private void EditLink(AffiliateLinkDto link)
+    {
+        NewLink = new AffiliateLinkFormModel
+        {
+            Id = link.Id,
+            Name = link.Name,
+            Description = link.Description,
+            AffiliateUrl = link.AffiliateUrl,
+            BonusInfo = link.BonusInfo,
+            ImageUrl = link.ImageUrl,
+            IsHighlighted = link.IsHighlighted,
+            IsEditing = true
+        };
+        showDialog = true;
+    }
+
+    private async Task DeleteLink(int id)
+    {
+        isLoading = true;
+        var success = await LinkService.DeleteAsync(id);
+        if (success)
+        {
+            await LoadLinks();
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SaveLink()
+    {
+        isSaving = true;
+
+        if (string.IsNullOrEmpty(NewLink.ImageUrl))
+            NewLink.ImageUrl = DefaultImage;
+
+        var dto = new CreateAffiliateLinkDto(
+            NewLink.Name,
+            NewLink.Description,
+            NewLink.AffiliateUrl,
+            NewLink.BonusInfo,
+            NewLink.ImageUrl,
+            NewLink.IsHighlighted
+        );
+
+        if (NewLink.IsEditing && NewLink.Id != null)
+        {
+            var dtoEdit = new AffiliateLinkDto(
+                (int)NewLink.Id,
+                NewLink.Name,
+                NewLink.Description,
+                NewLink.AffiliateUrl,
+                NewLink.BonusInfo,
+                NewLink.ImageUrl,
+                NewLink.IsHighlighted
+            );
+            await LinkService.UpdateAsync(dtoEdit);
+        }
+        else
+        {
+            await LinkService.CreateAsync(dto);
+        }
+
+        await LoadLinks();
+        CloseDialog();
+        isSaving = false;
+    }
+
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        // Definir limite de tamanho (2MB neste caso)
+        using var stream = file.OpenReadStream(2_000_000);
+        using var ms = new MemoryStream();
+
+        await stream.CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
+        // Converter para Base64 e atribuir ao modelo
+        NewLink.ImageUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
+    }
+
+}

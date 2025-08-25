@@ -1,0 +1,75 @@
+@inherits LayoutComponentBase
+
+<div class="min-h-full">
+  <nav class="bg-primary">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <!-- Logo + links desktop -->
+        <div class="flex items-center">
+          <div class="shrink-0">
+            <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=sky&shade=400"
+                 alt="Your Company" class="size-8" />
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-4 text-secondary">
+              <NavLink href="dashboard/resume" class="rounded-md px-3 py-2 text-sm font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Estatísticas</NavLink>
+              <NavLink href="dashboard/links" class="rounded-md px-3 py-2 text-sm font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Meus Links</NavLink>
+              <NavLink href="dashboard/users" class="rounded-md px-3 py-2 text-sm font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Acessos</NavLink>
+              <NavLink href="dashboard/settings" class="rounded-md px-3 py-2 text-sm font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Configurações</NavLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão menu mobile -->
+        <div class="-mr-2 flex md:hidden">
+          <button type="button" command="show-modal" commandfor="mobile-menu"
+                  class="relative inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 hover:text-white">
+            <span class="sr-only">Open main menu</span>
+            <!-- Ícone hamburguer -->
+            <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu mobile -->
+    <dialog id="mobile-menu" class="backdrop:bg-transparent md:hidden">
+      <div tabindex="0" class="fixed inset-0 focus:outline-none">
+        <div class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-primary p-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+          <div class="flex items-center justify-between">
+            <span class="text-white font-bold">Menu</span>
+            <button type="button" command="close" commandfor="mobile-menu"
+                    class="-m-2.5 rounded-md p-2.5 text-white">
+              <span class="sr-only">Close menu</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                   aria-hidden="true" class="size-6">
+                <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="mt-6 space-y-2">
+            <NavLink href="dashboard/resume" class="block rounded-md px-3 py-2 text-base font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Estatísticas</NavLink>
+            <NavLink href="dashboard/links" class="block rounded-md px-3 py-2 text-base font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Meus Links</NavLink>
+            <NavLink href="dashboard/users" class="block rounded-md px-3 py-2 text-base font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Acessos</NavLink>
+            <NavLink href="dashboard/settings" class="block rounded-md px-3 py-2 text-base font-medium text-secondary hover:bg-white/10 hover:text-white" ActiveClass="bg-white/10">Configurações</NavLink>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </nav>
+
+  <header class="relative bg-primary after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      @Body
+    </div>
+  </main>
+</div>
