@@ -28,6 +28,6 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /www/wwwroot/bet/docker-compose.yml
+            cd /www/wwwroot/bet
             docker-compose down
             docker-compose up -d --build
